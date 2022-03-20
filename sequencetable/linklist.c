@@ -1,9 +1,12 @@
-//部分伪代码，后面找时间整理
-
+#include<stdio.h>
+#include<stdlib.h>
 /* c2-1.h 线性表的动态分配顺序存储结构 */
 #define LIST_INIT_SIZE 10 /* 线性表存储空间的初始分配量 */
 #define LIST_INCREMENT 2  /* 线性表存储空间的分配增量 */
-#define EElemType int
+#define ElemType int
+#define TRUE 1
+#define FALSE 0
+
 typedef struct
 {
     ElemType *elem; /* 存储空间基址 */
@@ -12,29 +15,31 @@ typedef struct
 } SqList;
 
 /* bo2-1.c 顺序表示的线性表(存储结构由c2-1.h定义)的基本操作(12个),包括算法2.3,2.4,2.5,2.6 */
+
+
 void InitList(SqList *L) /* 算法2.3 */
 {                        /* 操作结果：构造一个空的顺序线性表L */
-    (*L).elem = (ElemType *)malloc(LIST_INIT_SIZE * sizeof(ElemType));
-    if (!(*L).elem)
-        exit(OVERFLOW);             /* 存储分配失败 */
-    (*L).length = 0;                /* 空表长度为0 */
-    (*L).listsize = LIST_INIT_SIZE; /* 初始存储容量 */
+    L->elem = (ElemType *)malloc(LIST_INIT_SIZE * sizeof(ElemType));
+    if (!L->elem)
+    exit(0);             /* 存储分配失败 */
+    L->length = 0;                /* 空表长度为0 */
+    L->listsize = LIST_INIT_SIZE; /* 初始存储容量 */
 }
 
 void DestroyList(SqList *L)
 { /* 初始条件：顺序线性表L已存在。操作结果：销毁顺序线性表L */
-    free((*L).elem);
-    (*L).elem = NULL;
-    (*L).length = 0;
-    (*L).listsize = 0;
+    free(L->elem);
+    L->elem = NULL;
+    L->length = 0;
+    L->listsize = 0;
 }
 
 void ClearList(SqList *L)
 { /* 初始条件：顺序线性表L已存在。操作结果：将L重置为空表 */
-    (*L).length = 0;
+    L->length = 0;
 }
 
-Status ListEmpty(SqList L)
+int ListEmpty(SqList L)
 { /* 初始条件：顺序线性表L已存在。操作结果：若L为空表，则返回TRUE，否则返回FALSE */
     if (L.length == 0)
         return TRUE;
@@ -47,15 +52,17 @@ int ListLength(SqList L)
     return L.length;
 }
 
-Status GetElem(SqList L, int i, ElemType *e)
+int GetElem(SqList L, int i, ElemType *e)
 { /* 初始条件：顺序线性表L已存在,1≤i≤ListLength(L)。操作结果：用e返回L中第i个数据元素的值 */
     if (i < 1 || i > L.length)
-        return ERROR;
+        return FALSE;
     *e = *(L.elem + i - 1);
-    return OK;
+        return *e;
 }
 
-int LocateElem(SqList L, ElemType e, Status (*compare)(ElemType, ElemType))
+
+//由于C语言不支持函数的重载，所以此处的compare函数需要在具体需要时重写
+int LocateElem(SqList L, ElemType e, int (*compare)(ElemType, ElemType))
 { /* 初始条件：顺序线性表L已存在，compare()是数据元素判定函数(满足为1，否则为0) */
     /* 操作结果：返回L中第1个与e满足关系compare()的数据元素的位序。 */
     /*           若这样的数据元素不存在，则返回值为0。算法2.6 */
@@ -70,7 +77,7 @@ int LocateElem(SqList L, ElemType e, Status (*compare)(ElemType, ElemType))
         return 0;
 }
 
-Status PriorElem(SqList L, ElemType cur_e, ElemType *pre_e)
+int PriorElem(SqList L, ElemType cur_e, ElemType *pre_e)
 { /* 初始条件：顺序线性表L已存在 */
     /* 操作结果：若cur_e是L的数据元素，且不是第一个，则用pre_e返回它的前驱， */
     /*           否则操作失败，pre_e无定义 */
@@ -82,15 +89,15 @@ Status PriorElem(SqList L, ElemType cur_e, ElemType *pre_e)
         i++;
     }
     if (i > L.length)
-        return INFEASIBLE; /* 操作失败 */
+        return FALSE; /* 操作失败 */
     else
     {
         *pre_e = *--p;
-        return OK;
+        return *pre_e;
     }
 }
 
-Status NextElem(SqList L, ElemType cur_e, ElemType *next_e)
+int NextElem(SqList L, ElemType cur_e, ElemType *next_e)
 { /* 初始条件：顺序线性表L已存在 */
     /* 操作结果：若cur_e是L的数据元素，且不是最后一个，则用next_e返回它的后继， */
     /*           否则操作失败，next_e无定义 */
@@ -102,51 +109,52 @@ Status NextElem(SqList L, ElemType cur_e, ElemType *next_e)
         p++;
     }
     if (i == L.length)
-        return INFEASIBLE; /* 操作失败 */
+        return FALSE; /* 操作失败 */
     else
     {
         *next_e = *++p;
-        return OK;
+        return *next_e;
     }
 }
 
-Status ListInsert(SqList *L, int i, ElemType e) /* 算法2.4 */
+int ListInsert(SqList *L, int i, ElemType e) /* 算法2.4 */
 {                                               /* 初始条件：顺序线性表L已存在，1≤i≤ListLength(L)+1 */
     /* 操作结果：在L中第i个位置之前插入新的数据元素e，L的长度加1 */
     ElemType *newbase, *q, *p;
-    if (i < 1 || i > (*L).length + 1) /* i值不合法 */
-        return ERROR;
-    if ((*L).length >= (*L).listsize) /* 当前存储空间已满,增加分配 */
+    if (i < 1 || i > L->length + 1) /* i值不合法 */
+        return FALSE;
+    if (L->length >= L->listsize) /* 当前存储空间已满,增加分配 */
     {
-        newbase = (ElemType *)realloc((*L).elem, ((*L).listsize + LIST_INCREMENT) * sizeof(ElemType));
+        newbase = (ElemType *)realloc(L->elem, (L->listsize + LIST_INCREMENT) * sizeof(ElemType));
         if (!newbase)
-            exit(OVERFLOW);              /* 存储分配失败 */
-        (*L).elem = newbase;             /* 新基址 */
-        (*L).listsize += LIST_INCREMENT; /* 增加存储容量 */
+            exit(0);              /* 存储分配失败 */
+        L->elem = newbase;             /* 新基址 */
+        L->listsize += LIST_INCREMENT; /* 增加存储容量 */
     }
-    q = (*L).elem + i - 1;                             /* q为插入位置 */
-    for (p = (*L).elem + (*L).length - 1; p >= q; --p) /* 插入位置及之后的元素右移 */
+    q = L->elem + i - 1;                             /* q为插入位置 */
+    for (p = L->elem + L->length - 1; p >= q; --p) /* 插入位置及之后的元素右移 */
         *(p + 1) = *p;
     *q = e;        /* 插入e */
-    ++(*L).length; /* 表长增1 */
-    return OK;
+    ++L->length; /* 表长增1 */
+    return TRUE;
 }
 
-Status ListDelete(SqList *L, int i, ElemType *e) /* 算法2.5 */
+int ListDelete(SqList *L, int i, ElemType *e) /* 算法2.5 */
 {                                                /* 初始条件：顺序线性表L已存在，1≤i≤ListLength(L) */
     /* 操作结果：删除L的第i个数据元素，并用e返回其值，L的长度减1 */
     ElemType *p, *q;
-    if (i < 1 || i > (*L).length) /* i值不合法 */
-        return ERROR;
-    p = (*L).elem + i - 1;           /* p为被删除元素的位置 */
+    if (i < 1 || i > L->length) /* i值不合法 */
+        return FALSE;
+    p = L->elem + i - 1;           /* p为被删除元素的位置 */
     *e = *p;                         /* 被删除元素的值赋给e */
-    q = (*L).elem + (*L).length - 1; /* 表尾元素的位置 */
+    q = L->elem + L->length - 1; /* 表尾元素的位置 */
     for (++p; p <= q; ++p)           /* 被删除元素之后的元素左移 */
         *(p - 1) = *p;
-    (*L).length--; /* 表长减1 */
-    return OK;
+    L->length--; /* 表长减1 */
+    return *e;
 }
 
+//同上面的compare函数，此处的vi函数需要在具体需要时重写以调用
 void ListTraverse(SqList L, void (*vi)(ElemType *))
 { /* 初始条件：顺序线性表L已存在 */
     /* 操作结果：依次对L的每个数据元素调用函数vi() */
@@ -158,8 +166,9 @@ void ListTraverse(SqList L, void (*vi)(ElemType *))
         vi(p++);
     printf("\n");
 }
+
+
 int main(int argc, char const *argv[])
 {
-    
-    return 0;
+    //已经做过测试,另有需要可自行测试
 }
