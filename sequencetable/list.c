@@ -1,27 +1,9 @@
-#include<stdio.h>
-#include<stdlib.h>
-/* c2-1.h 线性表的动态分配顺序存储结构 */
-#define LIST_INIT_SIZE 10 /* 线性表存储空间的初始分配量 */
-#define LIST_INCREMENT 2  /* 线性表存储空间的分配增量 */
-#define ElemType int
-#define TRUE 1
-#define FALSE 0
-
-typedef struct
-{
-    ElemType *elem; /* 存储空间基址 */
-    int length;     /* 当前长度 */
-    int listsize;   /* 当前分配的存储容量(以sizeof(ElemType)为单位) */
-} SqList;
-
-/* bo2-1.c 顺序表示的线性表(存储结构由c2-1.h定义)的基本操作(12个),包括算法2.3,2.4,2.5,2.6 */
-
-
+#include"linklist.h"
 void InitList(SqList *L) /* 算法2.3 */
 {                        /* 操作结果：构造一个空的顺序线性表L */
     L->elem = (ElemType *)malloc(LIST_INIT_SIZE * sizeof(ElemType));
     if (!L->elem)
-    exit(0);             /* 存储分配失败 */
+        exit(0);                  /* 存储分配失败 */
     L->length = 0;                /* 空表长度为0 */
     L->listsize = LIST_INIT_SIZE; /* 初始存储容量 */
 }
@@ -57,9 +39,8 @@ int GetElem(SqList L, int i, ElemType *e)
     if (i < 1 || i > L.length)
         return FALSE;
     *e = *(L.elem + i - 1);
-        return *e;
+    return *e;
 }
-
 
 //由于C语言不支持函数的重载，所以此处的compare函数需要在具体需要时重写
 int LocateElem(SqList L, ElemType e, int (*compare)(ElemType, ElemType))
@@ -118,7 +99,7 @@ int NextElem(SqList L, ElemType cur_e, ElemType *next_e)
 }
 
 int ListInsert(SqList *L, int i, ElemType e) /* 算法2.4 */
-{                                               /* 初始条件：顺序线性表L已存在，1≤i≤ListLength(L)+1 */
+{                                            /* 初始条件：顺序线性表L已存在，1≤i≤ListLength(L)+1 */
     /* 操作结果：在L中第i个位置之前插入新的数据元素e，L的长度加1 */
     ElemType *newbase, *q, *p;
     if (i < 1 || i > L->length + 1) /* i值不合法 */
@@ -127,33 +108,32 @@ int ListInsert(SqList *L, int i, ElemType e) /* 算法2.4 */
     {
         newbase = (ElemType *)realloc(L->elem, (L->listsize + LIST_INCREMENT) * sizeof(ElemType));
         if (!newbase)
-            exit(0);              /* 存储分配失败 */
+            exit(0);                   /* 存储分配失败 */
         L->elem = newbase;             /* 新基址 */
         L->listsize += LIST_INCREMENT; /* 增加存储容量 */
     }
-    q = L->elem + i - 1;                             /* q为插入位置 */
+    q = L->elem + i - 1;                           /* q为插入位置 */
     for (p = L->elem + L->length - 1; p >= q; --p) /* 插入位置及之后的元素右移 */
         *(p + 1) = *p;
-    *q = e;        /* 插入e */
+    *q = e;      /* 插入e */
     ++L->length; /* 表长增1 */
     return TRUE;
 }
 
 int ListDelete(SqList *L, int i, ElemType *e) /* 算法2.5 */
-{                                                /* 初始条件：顺序线性表L已存在，1≤i≤ListLength(L) */
+{                                             /* 初始条件：顺序线性表L已存在，1≤i≤ListLength(L) */
     /* 操作结果：删除L的第i个数据元素，并用e返回其值，L的长度减1 */
     ElemType *p, *q;
     if (i < 1 || i > L->length) /* i值不合法 */
         return FALSE;
-    p = L->elem + i - 1;           /* p为被删除元素的位置 */
-    *e = *p;                         /* 被删除元素的值赋给e */
+    p = L->elem + i - 1;         /* p为被删除元素的位置 */
+    *e = *p;                     /* 被删除元素的值赋给e */
     q = L->elem + L->length - 1; /* 表尾元素的位置 */
-    for (++p; p <= q; ++p)           /* 被删除元素之后的元素左移 */
+    for (++p; p <= q; ++p)       /* 被删除元素之后的元素左移 */
         *(p - 1) = *p;
     L->length--; /* 表长减1 */
     return *e;
 }
-
 //同上面的compare函数，此处的vi函数需要在具体需要时重写以调用
 void ListTraverse(SqList L, void (*vi)(ElemType *))
 { /* 初始条件：顺序线性表L已存在 */
@@ -165,10 +145,4 @@ void ListTraverse(SqList L, void (*vi)(ElemType *))
     for (i = 1; i <= L.length; i++)
         vi(p++);
     printf("\n");
-}
-
-
-int main(int argc, char const *argv[])
-{
-    //已经做过测试,另有需要可自行测试
 }
