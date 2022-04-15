@@ -1,5 +1,5 @@
 #include"linklist.h"
-void InitList(SqList *L) /* 算法2.3 */
+void InitList(SqList *L) 
 {                        /* 操作结果：构造一个空的顺序线性表L */
     L->elem = (ElemType *)malloc(LIST_INIT_SIZE * sizeof(ElemType));
     if (!L->elem)
