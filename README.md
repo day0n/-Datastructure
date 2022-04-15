@@ -1,4 +1,4 @@
-# -datastructur
+# -Datatructur
 记录我学习数据结构过程，采用C语言编写
 
 下面介绍下C语言中多文件编译
