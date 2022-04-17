@@ -46,7 +46,7 @@ int GetElem(SqList L, int i, ElemType *e)
 int LocateElem(SqList L, ElemType e, int (*compare)(ElemType, ElemType))
 { /* 初始条件：顺序线性表L已存在，compare()是数据元素判定函数(满足为1，否则为0) */
     /* 操作结果：返回L中第1个与e满足关系compare()的数据元素的位序。 */
-    /*           若这样的数据元素不存在，则返回值为0。算法2.6 */
+    /*           若这样的数据元素不存在，则返回值为0。
     ElemType *p;
     int i = 1;  /* i的初值为第1个元素的位序 */
     p = L.elem; /* p的初值为第1个元素的存储位置 */
