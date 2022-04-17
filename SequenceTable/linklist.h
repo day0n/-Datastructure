@@ -1,33 +1,20 @@
-#ifndef LINKLIST_H 
-#define LINKLIST_H 
-
 #include <stdio.h>
-#include <stdlib.h>
-
-#define LIST_INIT_SIZE 10 /* 线性表存储空间的初始分配量 */
-#define LIST_INCREMENT 2  /* 线性表存储空间的分配增量 */
-#define ElemType int
-#define TRUE 1
-#define FALSE 0 
-
-typedef struct
+#include <stdlib.h> //malloc()、exit()
+typedef struct List
 {
-    ElemType *elem; /* 存储空间基址 */
-    int length;     /* 当前长度 */
-    int listsize;   /* 当前分配的存储容量(以sizeof(ElemType)为单位) */
-} SqList;
+    int *head;  //”动态数组“
+    int length; //记录当前顺序表长度
+    int size;   //记录顺序表分配的存储容量
 
-void InitList(SqList *L);
-void DestroyList(SqList *L);
-void ClearList(SqList *L);
-int ListEmpty(SqList L);
-int ListLength(SqList L);
-int GetElem(SqList L, int i, ElemType *e);
-int LocateElem(SqList L, ElemType e, int (*compare)(ElemType, ElemType));
-int PriorElem(SqList L, ElemType cur_e, ElemType *pre_e);
-int NextElem(SqList L, ElemType cur_e, ElemType *next_e);
-int ListInsert(SqList *L, int i, ElemType e) ;
-int ListDelete(SqList *L, int i, ElemType *e);
-void ListTraverse(SqList L, void (*vi)(ElemType *));
+} list;
 
-#endif
+list InitList(int size1);
+void DestroyList(list L);
+void ClearEmpty(list L);
+int ListEmpty(list L);
+int ListLength(list L);
+int *GetElem(list L, int i, int *e);
+int LocateElem(list L, int e, int (*compare)(int a, int b));
+int compare(int a, int b);
+void PriorElem();
+list listcombine(list a, list b);1

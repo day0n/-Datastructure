@@ -1,7 +1,14 @@
-#include "linklist.h"
-/* bo2-1.c 顺序表示的线性表
+#include"linklist.h"
+
 int main(int argc, char const *argv[])
 {
-    //已经做过测试,另有需要可自行测试
-    
+
+    list a = InitList(5);
+
+    for (int i = 0; i < a.size; i++)
+    {
+        a.head[i] = i;
+        a.length++;
+    }
+    print(a);
 }
