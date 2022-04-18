@@ -1,3 +1,6 @@
+#ifndef SQSTACK_H
+#define SQSTACK_H
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -79,3 +82,5 @@ int Pop(Stack *S, Type *e);
  * 遍历栈的值
  */
 int StackTraverse(Stack *S);
+
+#endif
