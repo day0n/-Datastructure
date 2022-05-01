@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include<bits/stdc++.h>
+using namespace std;
 typedef struct Node
 {
     int date;
@@ -11,3 +11,4 @@ void preTraverse(nod *p);
 void inTraverse(nod *p);
 void posTraverse(nod *p);
 int TreeDeep(nod *p);
+void SeqTraverse(nod *p);
