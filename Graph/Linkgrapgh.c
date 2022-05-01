@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 /* 图的邻接表表示法 */
-
+//有向图
 #define MaxVertexNum 100 /* 最大顶点数设为100 */
 typedef int Vertex;      /* 用顶点下标表示顶点,为整型 */
 typedef int WeightType;  /* 边的权值设为整型 */
@@ -48,13 +48,24 @@ typedef PtrToGNode LGraph; /* 以邻接表方式存储的图类型 */
 LGraph CreateGraph(int VertexNum);
 void InsertEdge(LGraph Graph, Edge E);
 LGraph BuildGraph();
+void Visit(Vertex V);
+void DFS(LGraph Graph, Vertex V, void (*Visit)(Vertex));
 
+int *Visited;
 int main(int argc, char const *argv[])
 {
     LGraph a = BuildGraph();
+
+    Visited = (int *)malloc(a->Nv * sizeof(int));
+    for (int i = 0; i < a->Nv; i++)
+    {
+        Visited[i] = 0;
+    }
+    DFS(a, 0, Visit);
     return 0;
 }
 
+//初始化结构数组
 LGraph CreateGraph(int VertexNum)
 { /* 初始化一个有VertexNum个顶点但没有边的图 */
     Vertex V;
@@ -128,3 +139,35 @@ LGraph BuildGraph()
 
     return Graph;
 }
+
+/* 邻接表存储的图 - DFS */
+
+void Visit(Vertex V)
+{
+    printf("正在访问顶点%d\n", V);
+}
+
+/* Visited[]为全局变量，已经初始化为false */
+void DFS(LGraph Graph, Vertex V, void (*Visit)(Vertex))
+{ /* 以V为出发点对邻接表存储的图Graph进行DFS搜索 */
+    PtrToAdjVNode W;
+
+    Visit(V); /* 访问第V个顶点 */
+
+    Visited[V] = 1; /* 标记V已访问 */
+    //节点的存储是字符
+    printf("该点数据是%c\n", (Graph->G[V]).Data);
+    for (W = Graph->G[V].FirstEdge; W; W = W->Next)
+    {
+        // printf("niu");
+        /* 对V的每个邻接点W->AdjV */
+
+        if (Visited[W->AdjV] == 0) /* 若W->AdjV未被访问 */
+        {
+            // printf("niu");
+            DFS(Graph, W->AdjV, Visit); /* 则递归访问之 */
+        }
+        // printf("niu");
+    }
+}
+//从链式邻接表的组成方式去思考怎么写
