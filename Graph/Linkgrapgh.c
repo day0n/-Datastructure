@@ -185,32 +185,25 @@ void BFS(LGraph Graph, Vertex V)
     // LGraph是一个图的总的存储，是一个指针
     queue<int> que; //此处队列只需要下标即可所以使用int的队列
     que.push(V);
-    // Visited[que.front()] = 1;
+    // Visited[V] = 1;
     while (!que.empty()) // 0则是true，1是false
     {
-
-        if (Graph->G[que.front()].FirstEdge)
+        V = que.front();
+        PtrToAdjVNode temp = (PtrToAdjVNode)malloc(sizeof(PtrToAdjVNode));
+        //定义一个邻节点类型做中转指针，用来将firstEdge中转指向next节点，类似链表思想
+        //注意我们的头结点类型和邻结点类型不是相同的
+        temp = Graph->G[V].FirstEdge;
+        while (temp)
         {
-
-            que.push(Graph->G[que.front()].FirstEdge->AdjV);
-            PtrToAdjVNode temp = (PtrToAdjVNode)malloc(sizeof(PtrToAdjVNode)); //一个邻节点中转指针，用来将firstEdge中转指向next节点
-            temp = Graph->G[que.front()].FirstEdge;
-            while (temp->Next)
+            if (Visited[temp->AdjV] == 0) //表示没有访问过
             {
-                if (Visited[temp->AdjV] == 0) //说明该节点没有被访问，则入队
-                {
-                    que.push(temp->Next->AdjV);
-                }
-
-                temp = temp->Next; // 利用链表的思想来让temp达到中转功能
+                que.push(temp->AdjV);
             }
+            temp = temp->Next;
         }
-
-        //因为在这我让元素入队的时候是让每一个邻节点都入队了，所以出队必须要判断该节点是否已经被访问过了，不然就会造成重复访问的结果
-        if (Visited[que.front()] == 0)
-            cout << que.front() << "正在被访问---->"
-                 << "他的数据是" << Graph->G[que.front()].Data << "\n";
-        Visited[que.front()] = 1;
         que.pop();
+        cout << V << "正在被访问---->"
+             << "他的数据是" << Graph->G[V].Data << "\n";
+        Visited[V] = 1; //表示访问过了
     }
 }
