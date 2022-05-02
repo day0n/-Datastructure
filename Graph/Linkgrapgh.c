@@ -1,5 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <bits/stdc++.h>
+using namespace std;
+
+//注意，我使用的下标是0开始，输入时候第一个节点的下标是0；且数据是字符
+
+//输入示例
+// 3 3 0 1 3 0 2 4 1 2 5 n i u
 
 /* 图的邻接表表示法 */
 //有向图
@@ -50,18 +55,20 @@ void InsertEdge(LGraph Graph, Edge E);
 LGraph BuildGraph();
 void Visit(Vertex V);
 void DFS(LGraph Graph, Vertex V, void (*Visit)(Vertex));
+void BFS(LGraph Graph, Vertex valloc);
 
 int *Visited;
 int main(int argc, char const *argv[])
 {
     LGraph a = BuildGraph();
 
-    Visited = (int *)malloc(a->Nv * sizeof(int));
+    Visited = (int *)malloc(a->Nv * sizeof(int)); //创建一个数组。这样创建可以达到全局访问的目的
     for (int i = 0; i < a->Nv; i++)
     {
         Visited[i] = 0;
     }
-    DFS(a, 0, Visit);
+    // DFS(a, 0, Visit);
+    BFS(a, 0);
     return 0;
 }
 
@@ -97,12 +104,12 @@ void InsertEdge(LGraph Graph, Edge E)
 
     /* 若是无向图，还要插入边 <V2, V1> */
     /* 为V1建立新的邻接点 */
-    NewNode = (PtrToAdjVNode)malloc(sizeof(struct AdjVNode));
-    NewNode->AdjV = E->V1;
-    NewNode->Weight = E->Weight;
-    /* 将V1插入V2的表头 */
-    NewNode->Next = Graph->G[E->V2].FirstEdge;
-    Graph->G[E->V2].FirstEdge = NewNode;
+    // NewNode = (PtrToAdjVNode)malloc(sizeof(struct AdjVNode));
+    // NewNode->AdjV = E->V1;
+    // NewNode->Weight = E->Weight;
+    // /* 将V1插入V2的表头 */
+    // NewNode->Next = Graph->G[E->V2].FirstEdge;
+    // Graph->G[E->V2].FirstEdge = NewNode;
 }
 
 LGraph BuildGraph()
@@ -155,8 +162,9 @@ void DFS(LGraph Graph, Vertex V, void (*Visit)(Vertex))
     Visit(V); /* 访问第V个顶点 */
 
     Visited[V] = 1; /* 标记V已访问 */
+
     //节点的存储是字符
-    printf("该点数据是%c\n", (Graph->G[V]).Data);
+    printf("该点数据(字符)是%c\n", (Graph->G[V]).Data);
     for (W = Graph->G[V].FirstEdge; W; W = W->Next)
     {
         // printf("niu");
@@ -171,3 +179,38 @@ void DFS(LGraph Graph, Vertex V, void (*Visit)(Vertex))
     }
 }
 //从链式邻接表的组成方式去思考怎么写
+
+void BFS(LGraph Graph, Vertex V)
+{
+    // LGraph是一个图的总的存储，是一个指针
+    queue<int> que; //此处队列只需要下标即可所以使用int的队列
+    que.push(V);
+    // Visited[que.front()] = 1;
+    while (!que.empty()) // 0则是true，1是false
+    {
+
+        if (Graph->G[que.front()].FirstEdge)
+        {
+
+            que.push(Graph->G[que.front()].FirstEdge->AdjV);
+            PtrToAdjVNode temp = (PtrToAdjVNode)malloc(sizeof(PtrToAdjVNode)); //一个邻节点中转指针，用来将firstEdge中转指向next节点
+            temp = Graph->G[que.front()].FirstEdge;
+            while (temp->Next)
+            {
+                if (Visited[temp->AdjV] == 0) //说明该节点没有被访问，则入队
+                {
+                    que.push(temp->Next->AdjV);
+                }
+
+                temp = temp->Next; // 利用链表的思想来让temp达到中转功能
+            }
+        }
+
+        //因为在这我让元素入队的时候是让每一个邻节点都入队了，所以出队必须要判断该节点是否已经被访问过了，不然就会造成重复访问的结果
+        if (Visited[que.front()] == 0)
+            cout << que.front() << "正在被访问---->"
+                 << "他的数据是" << Graph->G[que.front()].Data << "\n";
+        Visited[que.front()] = 1;
+        que.pop();
+    }
+}
