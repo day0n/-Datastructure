@@ -129,7 +129,7 @@ LGraph BuildGraph()
         /* 读入边，格式为"起点 终点 权重"，插入邻接矩阵 */
         for (i = 0; i < Graph->Ne; i++)
         {
-            printf("分别输入起点 终点 权重\n");
+            printf("分别输入起点 终点 权重(起点从0开始)\n");
             scanf("%d %d %d", &E->V1, &E->V2, &E->Weight);
             /* 注意：如果权重不是整型，Weight的读入格式要改 */
             InsertEdge(Graph, E);
